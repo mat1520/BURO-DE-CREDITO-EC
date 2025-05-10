@@ -5,12 +5,16 @@ import PagoPage from "./PagoPage";
 import Footer from "./Footer";
 import "./MainPage.css";
 import { FaBars, FaTimes, FaCheckCircle } from "react-icons/fa";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from 'react-router-dom';
 import AnalisisPage from "./AnalisisPage";
 import AlivioFinancieroPage from "./AlivioFinancieroPage";
 import AlivioFinancieroPaso2 from "./AlivioFinancieroPaso2";
 import AlivioFinancieroPaso3 from "./AlivioFinancieroPaso3";
 import AlivioFinancieroResumenPago from "./AlivioFinancieroResumenPago";
+import SimuladorCredito from "./SimuladorCredito";
+import BarometroPonzi from "./BarometroPonzi";
+import Consejos from "./Consejos";
+import Contacto from "./Contacto";
 
 const MainPageRoutes = ({ score, setScore, scoreLevel }) => {
   const navigate = useNavigate();
@@ -25,6 +29,10 @@ const MainPageRoutes = ({ score, setScore, scoreLevel }) => {
         <Route path="/alivio-financiero/paso-2" element={<AlivioFinancieroPaso2 onSiguiente={() => navigate('/alivio-financiero/paso-3')} />} />
         <Route path="/alivio-financiero/paso-3" element={<AlivioFinancieroPaso3 onSiguiente={() => navigate('/alivio-financiero/resumen')} />} />
         <Route path="/alivio-financiero/resumen" element={<AlivioFinancieroResumenPago />} />
+        <Route path="/simulador-credito" element={<SimuladorCredito />} />
+        <Route path="/barometro-ponzi" element={<BarometroPonzi />} />
+        <Route path="/consejos" element={<Consejos />} />
+        <Route path="/contacto" element={<Contacto />} />
       </Routes>
     </main>
   );
@@ -103,12 +111,12 @@ const MainPage = () => {
                 >
                   <a href="#">Simuladores</a>
                   <ul className="submenu" style={{ display: submenuOpen ? 'flex' : 'none' }}>
-                    <li><a href="https://buroecuador.com/simulador-credito/" target="_blank" rel="noopener noreferrer">Simulador de crédito</a></li>
-                    <li><a href="https://buroecuador.com/barometro-ponzi/" target="_blank" rel="noopener noreferrer">Barómetro Ponzi</a></li>
+                    <li><Link to="/simulador-credito">Simulador de Crédito</Link></li>
+                    <li><Link to="/barometro-ponzi">Barómetro Ponzi</Link></li>
                   </ul>
                 </li>
-                <li><a href="https://buroecuador.com/blog/" target="_blank" rel="noopener noreferrer">Consejos</a></li>
-                <li><a href="https://buro.vercel.app/" target="_blank" rel="noopener noreferrer">Contacto</a></li>
+                <li><Link to="/consejos">Consejos</Link></li>
+                <li><Link to="/contacto">Contacto</Link></li>
               </ul>
             </nav>
             <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
@@ -129,9 +137,9 @@ const MainPage = () => {
             <a href="https://buro.vercel.app/" target="_blank" rel="noopener noreferrer">Inicio Buró Ecuador</a>
             <a href="/alivio-financiero">Alivio Financiero</a>
             <a href="https://buroecuador.com/simulador-credito/" target="_blank" rel="noopener noreferrer">Simulador de crédito</a>
-            <a href="https://buroecuador.com/barometro-ponzi/" target="_blank" rel="noopener noreferrer">Barómetro Ponzi</a>
-            <a href="https://buroecuador.com/blog/" target="_blank" rel="noopener noreferrer">Consejos</a>
-            <a href="https://buro.vercel.app/" target="_blank" rel="noopener noreferrer">Contacto</a>
+            <Link to="/barometro-ponzi">Barómetro Ponzi</Link>
+            <Link to="/consejos">Consejos</Link>
+            <Link to="/contacto">Contacto</Link>
           </nav>
         </div>
 
