@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import "./MainPage.css";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import AnalisisPage from "./AnalisisPage";
 
 const MainPageRoutes = () => {
   const navigate = useNavigate();
@@ -14,7 +15,8 @@ const MainPageRoutes = () => {
       <Routes>
         <Route path="/" element={<CreditReportPage onSiguiente={() => navigate('/documentos')} />} />
         <Route path="/documentos" element={<DocumentosPage onAnterior={() => navigate('/')} onSiguiente={() => navigate('/pago')} />} />
-        <Route path="/pago" element={<PagoPage onAnterior={() => navigate('/documentos')} />} />
+        <Route path="/pago" element={<PagoPage onAnterior={() => navigate('/documentos')} onSiguiente={() => navigate('/analisis')} />} />
+        <Route path="/analisis" element={<AnalisisPage onAnterior={() => navigate('/pago')} onSiguiente={() => alert('¡Formulario enviado!')} />} />
       </Routes>
     </main>
   );
