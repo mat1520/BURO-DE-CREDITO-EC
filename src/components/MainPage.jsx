@@ -121,28 +121,41 @@ const MainPage = () => {
               </ul>
             </nav>
             <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
-              <FaBars />
+              {mobileMenuOpen ? <FaTimes /> : <FaBars />}
             </button>
           </div>
         </header>
 
         {/* Mobile Menu */}
-        <div className={`mobile-menu ${mobileMenuOpen ? 'active' : ''}`}>
-          <div className="mobile-menu-header">
-            <img src="https://buroecuador.com/wp-content/uploads/2023/08/buro-ecuador-logo.svg" alt="Buró Ecuador Logo" className="main-logo-img" />
-            <button className="mobile-menu-close" onClick={toggleMobileMenu}>
-              <FaTimes />
-            </button>
+        {mobileMenuOpen && (
+          <div>
+            {/* Overlay */}
+            <div
+              className="mobile-menu-overlay"
+              onClick={toggleMobileMenu}
+              style={{
+                position: 'fixed',
+                top: 0, left: 0, width: '100vw', height: '100vh',
+                background: 'rgba(0,0,0,0.18)',
+                zIndex: 99
+              }}
+            />
+            {/* Menú */}
+            <div className={`mobile-menu active`}>
+              <div className="mobile-menu-header">
+                <img src="https://buroecuador.com/wp-content/uploads/2023/08/buro-ecuador-logo.svg" alt="Buró Ecuador Logo" className="main-logo-img" />
+              </div>
+              <nav className="mobile-nav">
+                <a href="https://buro.vercel.app/" target="_blank" rel="noopener noreferrer" onClick={toggleMobileMenu}>Inicio Buró Ecuador</a>
+                <a href="/alivio-financiero" onClick={toggleMobileMenu}>Alivio Financiero</a>
+                <Link to="/simulador-credito" onClick={toggleMobileMenu}>Simulador de Crédito</Link>
+                <Link to="/barometro-ponzi" onClick={toggleMobileMenu}>Barómetro Ponzi</Link>
+                <Link to="/consejos" onClick={toggleMobileMenu}>Consejos</Link>
+                <Link to="/contacto" onClick={toggleMobileMenu}>Contacto</Link>
+              </nav>
+            </div>
           </div>
-          <nav className="mobile-nav">
-            <a href="https://buro.vercel.app/" target="_blank" rel="noopener noreferrer">Inicio Buró Ecuador</a>
-            <a href="/alivio-financiero">Alivio Financiero</a>
-            <a href="https://buroecuador.com/simulador-credito/" target="_blank" rel="noopener noreferrer">Simulador de crédito</a>
-            <Link to="/barometro-ponzi">Barómetro Ponzi</Link>
-            <Link to="/consejos">Consejos</Link>
-            <Link to="/contacto">Contacto</Link>
-          </nav>
-        </div>
+        )}
 
         {/* Contenido principal: Score, formulario, etc */}
         <MainPageRoutes score={score} setScore={setScore} scoreLevel={scoreLevel} />
