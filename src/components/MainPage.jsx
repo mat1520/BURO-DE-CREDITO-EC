@@ -120,15 +120,19 @@ const MainPage = () => {
                 <li><Link to="/contacto">Contacto</Link></li>
               </ul>
             </nav>
-            <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
-              {mobileMenuOpen ? <FaTimes /> : <FaBars />}
+            <button
+              className="mobile-menu-btn"
+              onClick={toggleMobileMenu}
+              style={{ display: mobileMenuOpen ? 'none' : 'block' }}
+            >
+              <FaBars />
             </button>
           </div>
         </header>
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div>
+          <>
             {/* Overlay */}
             <div
               className="mobile-menu-overlay"
@@ -140,10 +144,45 @@ const MainPage = () => {
                 zIndex: 99
               }}
             />
-            {/* Menú */}
-            <div className={`mobile-menu active`}>
-              <div className="mobile-menu-header">
-                <img src="https://buroecuador.com/wp-content/uploads/2023/08/buro-ecuador-logo.svg" alt="Buró Ecuador Logo" className="main-logo-img" />
+            {/* Drawer */}
+            <div className="mobile-menu active" style={{
+              borderTopRightRadius: 40,
+              borderBottomRightRadius: 40,
+              width: '85vw',
+              maxWidth: 340,
+              minWidth: 260,
+              height: '100vh',
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              background: '#fff',
+              zIndex: 100,
+              boxShadow: '0 0 32px #0002',
+              display: 'flex',
+              flexDirection: 'column'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '18px 22px 8px 18px'
+              }}>
+                <img src="https://buroecuador.com/wp-content/uploads/2023/08/buro-ecuador-logo.svg" alt="Buró Ecuador Logo" style={{ height: 38 }} />
+                <button
+                  className="mobile-menu-btn"
+                  onClick={toggleMobileMenu}
+                  aria-label="Cerrar menú"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontSize: 28,
+                    color: '#b71c1c',
+                    cursor: 'pointer',
+                    marginLeft: 8
+                  }}
+                >
+                  <FaTimes />
+                </button>
               </div>
               <nav className="mobile-nav">
                 <a href="https://buro.vercel.app/" target="_blank" rel="noopener noreferrer" onClick={toggleMobileMenu}>Inicio Buró Ecuador</a>
@@ -154,7 +193,7 @@ const MainPage = () => {
                 <Link to="/contacto" onClick={toggleMobileMenu}>Contacto</Link>
               </nav>
             </div>
-          </div>
+          </>
         )}
 
         {/* Contenido principal: Score, formulario, etc */}

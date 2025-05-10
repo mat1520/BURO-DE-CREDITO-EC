@@ -1324,7 +1324,7 @@
   cursor: default !important;
   box-shadow: none;
   opacity: 1;
-}
+} 
 
 /* Mejorar presentación: solo el bloque principal tiene fondo y sombra, los campos no */
 .main-form .form-group {
