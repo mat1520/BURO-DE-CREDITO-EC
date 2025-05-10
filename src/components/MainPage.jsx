@@ -83,8 +83,8 @@ const MainPage = () => {
             </div>
             <nav className="main-nav">
               <ul>
-                <li><a href="#">Inicio Buró Ecuador</a></li>
-                <li><a href="#">Alivio Financiero</a></li>
+                <li><a href="https://buro.vercel.app/" target="_blank" rel="noopener noreferrer">Inicio Buró Ecuador</a></li>
+                <li><a href="https://buroecuador.com/alivio-financiero/" target="_blank" rel="noopener noreferrer">Alivio Financiero</a></li>
                 <li
                   className="has-submenu"
                   onMouseEnter={() => setSubmenuOpen(true)}
@@ -95,12 +95,12 @@ const MainPage = () => {
                 >
                   <a href="#">Simuladores</a>
                   <ul className="submenu" style={{ display: submenuOpen ? 'flex' : 'none' }}>
-                    <li><a href="#">Simulador de crédito</a></li>
-                    <li><a href="#">Barómetro Ponzi</a></li>
+                    <li><a href="https://buroecuador.com/simulador-credito/" target="_blank" rel="noopener noreferrer">Simulador de crédito</a></li>
+                    <li><a href="https://buroecuador.com/barometro-ponzi/" target="_blank" rel="noopener noreferrer">Barómetro Ponzi</a></li>
                   </ul>
                 </li>
-                <li><a href="#">Consejos</a></li>
-                <li><a href="#">Contacto</a></li>
+                <li><a href="https://buroecuador.com/blog/" target="_blank" rel="noopener noreferrer">Consejos</a></li>
+                <li><a href="https://buro.vercel.app/" target="_blank" rel="noopener noreferrer">Contacto</a></li>
               </ul>
             </nav>
             <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
@@ -118,11 +118,12 @@ const MainPage = () => {
             </button>
           </div>
           <nav className="mobile-nav">
-            <a href="#">Inicio Buró Ecuador</a>
-            <a href="#">Alivio Financiero</a>
-            <a href="#">Simuladores</a>
-            <a href="#">Consejos</a>
-            <a href="#">Contacto</a>
+            <a href="https://buro.vercel.app/" target="_blank" rel="noopener noreferrer">Inicio Buró Ecuador</a>
+            <a href="https://buroecuador.com/alivio-financiero/" target="_blank" rel="noopener noreferrer">Alivio Financiero</a>
+            <a href="https://buroecuador.com/simulador-credito/" target="_blank" rel="noopener noreferrer">Simulador de crédito</a>
+            <a href="https://buroecuador.com/barometro-ponzi/" target="_blank" rel="noopener noreferrer">Barómetro Ponzi</a>
+            <a href="https://buroecuador.com/blog/" target="_blank" rel="noopener noreferrer">Consejos</a>
+            <a href="https://buro.vercel.app/" target="_blank" rel="noopener noreferrer">Contacto</a>
           </nav>
         </div>
 

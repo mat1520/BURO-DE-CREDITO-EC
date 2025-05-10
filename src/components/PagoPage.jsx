@@ -112,7 +112,7 @@ const PagoPage = ({ score, setScore, onAnterior, onSiguiente }) => {
     if (!form.email) newErrors.email = "Campo requerido";
     else if (!/^\S+@\S+\.\S+$/.test(form.email)) newErrors.email = "Correo electrónico inválido";
     if (!form.whatsapp) newErrors.whatsapp = "Campo requerido";
-    else if (!/^[0-9]{9}$/.test(form.whatsapp)) newErrors.whatsapp = "Debe ingresar 9 dígitos después de +593";
+    else if (!/^0[0-9]{9}$/.test(form.whatsapp)) newErrors.whatsapp = "Debe ingresar el número completo (ej: 0998765432)";
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
       if (onSiguiente) onSiguiente();
@@ -201,29 +201,18 @@ const PagoPage = ({ score, setScore, onAnterior, onSiguiente }) => {
               </div>
               <div className="form-group" style={{ flex: 1 }}>
                 <label className="form-label">WhatsApp <span className="form-required">*</span></label>
-                <div style={{ position: 'relative' }}>
-                  <span style={{ 
-                    position: 'absolute', 
-                    left: 12, 
-                    top: '50%', 
-                    transform: 'translateY(-50%)', 
-                    color: '#666',
-                    pointerEvents: 'none'
-                  }}>+593</span>
-                  <input 
-                    name="whatsapp" 
-                    className={`form-input form-input-compact${errors.whatsapp ? ' input-error-v2' : ''}`} 
-                    placeholder="Ej: 987654321" 
-                    value={form.whatsapp} 
-                    onChange={e => {
-                      // Solo permitir números
-                      const value = e.target.value.replace(/[^0-9]/g, '');
-                      setForm({ ...form, whatsapp: value });
-                    }}
-                    style={{ paddingLeft: 45 }}
-                    maxLength={9}
-                  />
-                </div>
+                <input 
+                  name="whatsapp" 
+                  className={`form-input form-input-compact${errors.whatsapp ? ' input-error-v2' : ''}`} 
+                  placeholder="Ej: 0998765432" 
+                  value={form.whatsapp} 
+                  onChange={e => {
+                    // Solo permitir números
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    setForm({ ...form, whatsapp: value });
+                  }}
+                  maxLength={10}
+                />
                 {errors.whatsapp && <div className="form-error-v2">{errors.whatsapp}</div>}
               </div>
             </div>
