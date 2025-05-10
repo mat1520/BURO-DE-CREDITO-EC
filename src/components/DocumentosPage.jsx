@@ -84,7 +84,7 @@ const DocumentosPage = ({ onAnterior, onSiguiente }) => {
               </label>
               {error && <div className="form-error-v2">{error}</div>}
             </div>
-            <div className="form-buttons" style={{ display: "flex", gap: 12, marginTop: 24, justifyContent: 'flex-start' }}>
+            <div className="form-buttons" style={{ display: "flex", justifyContent: 'space-between', marginTop: 24 }}>
               <button type="button" className="siguiente-btn" onClick={onAnterior} style={{ background: "#ccc", color: "#222" }}>Anterior</button>
               <button type="submit" className="siguiente-btn">Siguiente</button>
             </div>

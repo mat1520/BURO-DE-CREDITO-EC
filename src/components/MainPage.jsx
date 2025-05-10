@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import CreditReportPage from "./CreditReportPage";
 import DocumentosPage from "./DocumentosPage";
+import PagoPage from "./PagoPage";
 import Footer from "./Footer";
 import "./MainPage.css";
 import { FaBars, FaTimes } from "react-icons/fa";
@@ -8,7 +9,7 @@ import { FaBars, FaTimes } from "react-icons/fa";
 const MainPage = () => {
   const [submenuOpen, setSubmenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [page, setPage] = useState("credit"); // "credit" o "documentos"
+  const [page, setPage] = useState("credit"); // "credit", "documentos", "pago"
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -17,6 +18,8 @@ const MainPage = () => {
   // Funciones para navegación
   const handleSiguiente = () => setPage("documentos");
   const handleAnterior = () => setPage("credit");
+  const handleSiguienteDocumentos = () => setPage("pago");
+  const handleAnteriorPago = () => setPage("documentos");
 
   return (
     <div className="mainpage-bg">
@@ -75,8 +78,10 @@ const MainPage = () => {
       <main className="main-content">
         {page === "credit" ? (
           <CreditReportPage onSiguiente={handleSiguiente} />
+        ) : page === "documentos" ? (
+          <DocumentosPage onAnterior={handleAnterior} onSiguiente={handleSiguienteDocumentos} />
         ) : (
-          <DocumentosPage onAnterior={handleAnterior} />
+          <PagoPage onAnterior={handleAnteriorPago} />
         )}
       </main>
 
