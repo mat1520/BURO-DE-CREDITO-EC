@@ -7,6 +7,10 @@ import "./MainPage.css";
 import { FaBars, FaTimes, FaCheckCircle } from "react-icons/fa";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import AnalisisPage from "./AnalisisPage";
+import AlivioFinancieroPage from "./AlivioFinancieroPage";
+import AlivioFinancieroPaso2 from "./AlivioFinancieroPaso2";
+import AlivioFinancieroPaso3 from "./AlivioFinancieroPaso3";
+import AlivioFinancieroResumenPago from "./AlivioFinancieroResumenPago";
 
 const MainPageRoutes = ({ score, setScore, scoreLevel }) => {
   const navigate = useNavigate();
@@ -17,6 +21,10 @@ const MainPageRoutes = ({ score, setScore, scoreLevel }) => {
         <Route path="/documentos" element={<DocumentosPage score={score} setScore={setScore} scoreLevel={scoreLevel} onAnterior={() => navigate('/')} onSiguiente={() => navigate('/pago')} />} />
         <Route path="/pago" element={<PagoPage score={score} setScore={setScore} scoreLevel={scoreLevel} onAnterior={() => navigate('/documentos')} onSiguiente={() => navigate('/analisis')} />} />
         <Route path="/analisis" element={<AnalisisPage score={score} setScore={setScore} scoreLevel={scoreLevel} onAnterior={() => navigate('/pago')} onSiguiente={() => alert('¡Formulario enviado!')} />} />
+        <Route path="/alivio-financiero" element={<AlivioFinancieroPage />} />
+        <Route path="/alivio-financiero/paso-2" element={<AlivioFinancieroPaso2 onSiguiente={() => navigate('/alivio-financiero/paso-3')} />} />
+        <Route path="/alivio-financiero/paso-3" element={<AlivioFinancieroPaso3 onSiguiente={() => navigate('/alivio-financiero/resumen')} />} />
+        <Route path="/alivio-financiero/resumen" element={<AlivioFinancieroResumenPago />} />
       </Routes>
     </main>
   );
@@ -84,7 +92,7 @@ const MainPage = () => {
             <nav className="main-nav">
               <ul>
                 <li><a href="https://buro.vercel.app/" target="_blank" rel="noopener noreferrer">Inicio Buró Ecuador</a></li>
-                <li><a href="https://buroecuador.com/alivio-financiero/" target="_blank" rel="noopener noreferrer">Alivio Financiero</a></li>
+                <li><a href="/alivio-financiero">Alivio Financiero</a></li>
                 <li
                   className="has-submenu"
                   onMouseEnter={() => setSubmenuOpen(true)}
@@ -119,7 +127,7 @@ const MainPage = () => {
           </div>
           <nav className="mobile-nav">
             <a href="https://buro.vercel.app/" target="_blank" rel="noopener noreferrer">Inicio Buró Ecuador</a>
-            <a href="https://buroecuador.com/alivio-financiero/" target="_blank" rel="noopener noreferrer">Alivio Financiero</a>
+            <a href="/alivio-financiero">Alivio Financiero</a>
             <a href="https://buroecuador.com/simulador-credito/" target="_blank" rel="noopener noreferrer">Simulador de crédito</a>
             <a href="https://buroecuador.com/barometro-ponzi/" target="_blank" rel="noopener noreferrer">Barómetro Ponzi</a>
             <a href="https://buroecuador.com/blog/" target="_blank" rel="noopener noreferrer">Consejos</a>

@@ -916,11 +916,12 @@
   border-radius: 8px;
   height: 56px;
   padding: 0 18px;
-  font-size: 1.3em;
+  font-size: 16px;
   font-family: 'Segoe UI', Arial, sans-serif;
-  font-weight: 700;
-  color: #232a31;
+  font-weight: 400;
+  color: #000;
   background: #fff;
+  line-height: 22px;
   transition: border-color 0.2s, box-shadow 0.2s;
   outline: none;
   appearance: none;
@@ -1323,4 +1324,47 @@
   cursor: default !important;
   box-shadow: none;
   opacity: 1;
+}
+
+/* Mejorar presentación: solo el bloque principal tiene fondo y sombra, los campos no */
+.main-form .form-group {
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  margin-bottom: 12px;
+  border: none;
+}
+
+/* Asegurar una sola columna en el formulario */
+.main-form .form-row {
+  flex-direction: column !important;
+  gap: 0 !important;
+}
+
+/* Ajustar el padding del formulario principal si es necesario */
+.main-form {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px #0001;
+  border: 1px solid #ececf0;
+  padding: 32px 24px;
+  max-width: 520px;
+  margin: 0 auto 32px auto;
+}
+
+.main-form input.form-select::placeholder {
+  color: #bdbdbd;
+  opacity: 1;
+}
+
+/* Mejora para los errores */
+.main-form .input-error-v2 {
+  border-color: #b71c1c !important;
+  background: #fff6f6 !important;
+}
+
+/* Ajuste para el contador de caracteres */
+.main-form .form-group > div[style*='text-align: right'] {
+  margin-top: 2px;
 } 
