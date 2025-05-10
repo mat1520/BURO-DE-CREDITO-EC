@@ -1,19 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./CreditReportPage.css";
 import ScoreCircle from "./ScoreCircle";
 import { FaCheckCircle, FaInfoCircle } from "react-icons/fa";
 
-const SCORE_LEVEL = {
-  score: 900,
-  letter: "AA",
-  color: "#43b324",
-  emoji: <FaCheckCircle style={{ color: '#43b324', verticalAlign: 'middle', fontSize: '1.1em', marginLeft: 2, marginRight: 2 }} />,
-  text: "Vas muy bien, pero siempre es bueno mejorar. Llena el formulario y solicita tu análisis de crédito para conocer oportunidades y proteger tu historial financiero."
-};
-
-const DocumentosPage = ({ onAnterior, onSiguiente }) => {
+const DocumentosPage = ({ onAnterior, onSiguiente, score, setScore, scoreLevel }) => {
   const [confirmed, setConfirmed] = useState(false);
   const [error, setError] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
+  const scoreBarRef = useRef(null);
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    updateScore(e);
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging) {
+      updateScore(e);
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const updateScore = (e) => {
+    if (!scoreBarRef.current) return;
+    
+    const rect = scoreBarRef.current.getBoundingClientRect();
+    const y = e.clientY - rect.top;
+    const percentage = Math.max(0, Math.min(1, 1 - (y / rect.height)));
+    const newScore = Math.round(percentage * 999);
+    setScore(newScore);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
 
   const handleSiguiente = (e) => {
     e.preventDefault();
@@ -94,28 +124,33 @@ const DocumentosPage = ({ onAnterior, onSiguiente }) => {
           <section className="score-section score-section-v2">
             <div className="score-top-block-v2">
               <div className="score-circle-block">
-                <ScoreCircle score={SCORE_LEVEL.score} color={SCORE_LEVEL.color} />
+                <ScoreCircle score={score} color={scoreLevel.color} />
               </div>
               <div className="score-bar-block-v2">
                 <div className="score-bar-label">Score de Crédito:</div>
-                <div className="score-bar-vertical" style={{ cursor: 'default' }}>
-                  <div
-                    className="score-bar-indicator"
-                    style={{
-                      top: `${100 - (SCORE_LEVEL.score / 999) * 100}%`,
-                      background: SCORE_LEVEL.color,
-                      cursor: 'default'
+                <div 
+                  className="score-bar-vertical" 
+                  ref={scoreBarRef}
+                  onMouseDown={handleMouseDown}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div 
+                    className="score-bar-indicator" 
+                    style={{ 
+                      top: `${100 - (score / 999) * 100}%`, 
+                      background: scoreLevel.color,
+                      cursor: 'grab'
                     }}
                   ></div>
                 </div>
-                <div className="score-bar-value">{SCORE_LEVEL.score} - AA</div>
+                <div className="score-bar-value">{score} - {scoreLevel.letter === 'AA' ? 'AAA' : scoreLevel.letter}</div>
               </div>
             </div>
-            <div className="score-info score-info-v2" style={{ borderColor: SCORE_LEVEL.color }}>
-              <div className="score-info-badge" style={{ background: SCORE_LEVEL.color }}>AA</div>
+            <div className="score-info score-info-v2" style={{ borderColor: scoreLevel.color }}>
+              <div className="score-info-badge" style={{ background: scoreLevel.color }}>{scoreLevel.letter === 'AA' ? 'AAA' : scoreLevel.letter}</div>
               <h3>Tu Score Crediticio</h3>
-              <p>Puntaje simulado: <b>{SCORE_LEVEL.score}</b></p>
-              <p><b>Cliente AA</b> {SCORE_LEVEL.emoji} {SCORE_LEVEL.text}</p>
+              <p>Puntaje simulado: <b>{score}</b></p>
+              <p><b>Cliente {scoreLevel.letter === 'AA' ? 'AAA' : scoreLevel.letter}</b> {scoreLevel.emoji} {scoreLevel.text}</p>
             </div>
             <div className="alert-bottom alert-bottom-v2">
               <span className="alert-orange">Atención:</span> Debido a una alta demanda, <span role="img" aria-label="alerta">🟠</span> <b>las solicitudes podrían tardar hasta 24 horas en procesarse.</b>

@@ -1,17 +1,48 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./CreditReportPage.css";
 import ScoreCircle from "./ScoreCircle";
 import { FaCheckCircle, FaInfoCircle } from "react-icons/fa";
 
-const SCORE_LEVEL = {
-  score: 900,
-  letter: "AA",
-  color: "#43b324",
-  emoji: <FaCheckCircle style={{ color: '#43b324', verticalAlign: 'middle', fontSize: '1.1em', marginLeft: 2, marginRight: 2 }} />,
-  text: "Vas muy bien, pero siempre es bueno mejorar. Llena el formulario y solicita tu análisis de crédito para conocer oportunidades y proteger tu historial financiero."
-};
+const SCORE_LEVELS = [
+  {
+    min: 0,
+    max: 599,
+    letter: "C",
+    emoji: "🚫🔥",
+    color: "#b71c1c",
+    text: "Actualmente es muy difícil acceder a créditos. Haz tu Análisis personalizado para identificar deudas, planificar pagos y trabajar en la recuperación de tu historial financiero."
+  },
+  {
+    min: 600,
+    max: 799,
+    letter: "B",
+    emoji: "😟🔎",
+    color: "#e6a700",
+    text: "Tu calificación es regular. Solicita un Análisis personalizado para conocer a quién debes, cuánto debes y qué estrategias puedes aplicar para mejorar tus posibilidades de obtener un crédito."
+  },
+  {
+    min: 800,
+    max: 899,
+    letter: "A",
+    emoji: "⚠️📋",
+    color: "#fbc02d",
+    text: "Estás al límite. Llena el formulario para solicitar tu Análisis personalizado y detectar qué debes mejorar para fortalecer tu perfil crediticio y mantener acceso a nuevos créditos."
+  },
+  {
+    min: 900,
+    max: 999,
+    letter: "AA",
+    emoji: <FaCheckCircle style={{ color: '#43b324', verticalAlign: 'middle', fontSize: '1.1em', marginLeft: 2, marginRight: 2 }} />, // check verde
+    color: "#43b324",
+    text: "Vas muy bien, pero siempre es bueno mejorar. Llena el formulario y solicita tu análisis de crédito para conocer oportunidades y proteger tu historial financiero."
+  }
+];
 
-const PagoPage = ({ onAnterior, onSiguiente }) => {
+function getScoreLevel(score) {
+  return SCORE_LEVELS.find(l => score >= l.min && score <= l.max) || SCORE_LEVELS[SCORE_LEVELS.length - 1];
+}
+
+const PagoPage = ({ score, setScore, onAnterior, onSiguiente }) => {
   const [form, setForm] = useState({
     pago: "",
     nombre: "",
@@ -23,6 +54,9 @@ const PagoPage = ({ onAnterior, onSiguiente }) => {
     whatsapp: ""
   });
   const [errors, setErrors] = useState({});
+  const SCORE_LEVEL = getScoreLevel(score);
+  const [isDragging, setIsDragging] = useState(false);
+  const scoreBarRef = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('pagoForm');
@@ -37,6 +71,34 @@ const PagoPage = ({ onAnterior, onSiguiente }) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // Score bar handlers
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    updateScore(e);
+  };
+  const handleMouseMove = (e) => {
+    if (isDragging) updateScore(e);
+  };
+  const handleMouseUp = () => setIsDragging(false);
+  const updateScore = (e) => {
+    if (!scoreBarRef.current) return;
+    const rect = scoreBarRef.current.getBoundingClientRect();
+    const y = e.clientY - rect.top;
+    const percentage = Math.max(0, Math.min(1, 1 - (y / rect.height)));
+    const newScore = Math.round(percentage * 999);
+    setScore(newScore);
+  };
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
+
   const handleSubmit = e => {
     e.preventDefault();
     const newErrors = {};
@@ -50,6 +112,7 @@ const PagoPage = ({ onAnterior, onSiguiente }) => {
     if (!form.email) newErrors.email = "Campo requerido";
     else if (!/^\S+@\S+\.\S+$/.test(form.email)) newErrors.email = "Correo electrónico inválido";
     if (!form.whatsapp) newErrors.whatsapp = "Campo requerido";
+    else if (!/^[0-9]{9}$/.test(form.whatsapp)) newErrors.whatsapp = "Debe ingresar 9 dígitos después de +593";
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
       if (onSiguiente) onSiguiente();
@@ -138,7 +201,29 @@ const PagoPage = ({ onAnterior, onSiguiente }) => {
               </div>
               <div className="form-group" style={{ flex: 1 }}>
                 <label className="form-label">WhatsApp <span className="form-required">*</span></label>
-                <input name="whatsapp" className={`form-input form-input-compact${errors.whatsapp ? ' input-error-v2' : ''}`} placeholder="Ej: 0990446688" value={form.whatsapp} onChange={handleChange} />
+                <div style={{ position: 'relative' }}>
+                  <span style={{ 
+                    position: 'absolute', 
+                    left: 12, 
+                    top: '50%', 
+                    transform: 'translateY(-50%)', 
+                    color: '#666',
+                    pointerEvents: 'none'
+                  }}>+593</span>
+                  <input 
+                    name="whatsapp" 
+                    className={`form-input form-input-compact${errors.whatsapp ? ' input-error-v2' : ''}`} 
+                    placeholder="Ej: 987654321" 
+                    value={form.whatsapp} 
+                    onChange={e => {
+                      // Solo permitir números
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      setForm({ ...form, whatsapp: value });
+                    }}
+                    style={{ paddingLeft: 45 }}
+                    maxLength={9}
+                  />
+                </div>
                 {errors.whatsapp && <div className="form-error-v2">{errors.whatsapp}</div>}
               </div>
             </div>
@@ -152,28 +237,32 @@ const PagoPage = ({ onAnterior, onSiguiente }) => {
           <section className="score-section score-section-v2">
             <div className="score-top-block-v2">
               <div className="score-circle-block">
-                <ScoreCircle score={SCORE_LEVEL.score} color={SCORE_LEVEL.color} />
+                <ScoreCircle score={score} color={SCORE_LEVEL.color} />
               </div>
               <div className="score-bar-block-v2">
                 <div className="score-bar-label">Score de Crédito:</div>
-                <div className="score-bar-vertical" style={{ cursor: 'default' }}>
+                <div className="score-bar-vertical" 
+                  ref={scoreBarRef}
+                  onMouseDown={handleMouseDown}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div
                     className="score-bar-indicator"
                     style={{
-                      top: `${100 - (SCORE_LEVEL.score / 999) * 100}%`,
+                      top: `${100 - (score / 999) * 100}%`,
                       background: SCORE_LEVEL.color,
-                      cursor: 'default'
+                      cursor: 'grab'
                     }}
                   ></div>
                 </div>
-                <div className="score-bar-value">{SCORE_LEVEL.score} - AA</div>
+                <div className="score-bar-value">{score} - {SCORE_LEVEL.letter}</div>
               </div>
             </div>
             <div className="score-info score-info-v2" style={{ borderColor: SCORE_LEVEL.color }}>
-              <div className="score-info-badge" style={{ background: SCORE_LEVEL.color }}>AA</div>
+              <div className="score-info-badge" style={{ background: SCORE_LEVEL.color }}>{SCORE_LEVEL.letter}</div>
               <h3>Tu Score Crediticio</h3>
-              <p>Puntaje simulado: <b>{SCORE_LEVEL.score}</b></p>
-              <p><b>Cliente AA</b> {SCORE_LEVEL.emoji} {SCORE_LEVEL.text}</p>
+              <p>Puntaje simulado: <b>{score}</b></p>
+              <p><b>Cliente {SCORE_LEVEL.letter}</b> {SCORE_LEVEL.emoji} {SCORE_LEVEL.text}</p>
             </div>
             <div className="alert-bottom alert-bottom-v2">
               <span className="alert-orange">Atención:</span> Debido a una alta demanda, <span role="img" aria-label="alerta">🟠</span> <b>las solicitudes podrían tardar hasta 24 horas en procesarse.</b>

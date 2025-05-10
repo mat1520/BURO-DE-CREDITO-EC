@@ -42,11 +42,10 @@ function getScoreLevel(score) {
   return SCORE_LEVELS.find(l => score >= l.min && score <= l.max) || SCORE_LEVELS[SCORE_LEVELS.length - 1];
 }
 
-const CreditReportPage = ({ onSiguiente }) => {
+const CreditReportPage = ({ score, setScore, onSiguiente }) => {
   const [selectedHistory, setSelectedHistory] = useState("");
   const [source, setSource] = useState("");
   const [confirmed, setConfirmed] = useState(false);
-  const [score, setScore] = useState(900);
   const [isDragging, setIsDragging] = useState(false);
   const scoreBarRef = useRef(null);
   const [price, setPrice] = useState("0.00");
