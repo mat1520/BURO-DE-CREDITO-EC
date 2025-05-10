@@ -5,11 +5,11 @@ const Footer = () => (
   <footer className="footer-container">
     <div className="footer-content">
       <div className="footer-left">
-        <div className="footer-copyright">
+        <div className="footer-copyright-nunito">
           © Copyright 2025<br />
-          <b>BURÓ ECUADOR</b>
+          BURÓ ECUADOR
         </div>
-        <div className="footer-disclaimer">
+        <div className="footer-disclaimer footer-descargo-roboto">
           <span className="footer-note">(1) Nota de descargo:</span> Por favor, ten en cuenta que Buró Ecuador opera como la plataforma oficial de SOPORTE PRESS. Al solicitar la generación de tu «Reporte Buró Ecuador» estás otorgando tu autorización expresa a esta plataforma para que analice y obtenga tu información crediticia en tu nombre. Asegúrate de comprender y estar de acuerdo con este proceso antes de continuar.
         </div>
       </div>

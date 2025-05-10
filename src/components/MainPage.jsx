@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import CreditReportPage from "./CreditReportPage";
+import DocumentosPage from "./DocumentosPage";
 import Footer from "./Footer";
 import "./MainPage.css";
 import { FaBars, FaTimes } from "react-icons/fa";
@@ -7,10 +8,15 @@ import { FaBars, FaTimes } from "react-icons/fa";
 const MainPage = () => {
   const [submenuOpen, setSubmenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [page, setPage] = useState("credit"); // "credit" o "documentos"
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
+
+  // Funciones para navegación
+  const handleSiguiente = () => setPage("documentos");
+  const handleAnterior = () => setPage("credit");
 
   return (
     <div className="mainpage-bg">
@@ -67,7 +73,11 @@ const MainPage = () => {
 
       {/* Contenido principal: Score, formulario, etc */}
       <main className="main-content">
-        <CreditReportPage />
+        {page === "credit" ? (
+          <CreditReportPage onSiguiente={handleSiguiente} />
+        ) : (
+          <DocumentosPage onAnterior={handleAnterior} />
+        )}
       </main>
 
       {/* Footer */}

@@ -22,14 +22,14 @@ const SCORE_LEVELS = [
   },
   {
     min: 800,
-    max: 900,
+    max: 899,
     letter: "A",
     emoji: "⚠️📋",
     color: "#fbc02d",
     text: "Estás al límite. Llena el formulario para solicitar tu Análisis personalizado y detectar qué debes mejorar para fortalecer tu perfil crediticio y mantener acceso a nuevos créditos."
   },
   {
-    min: 901,
+    min: 900,
     max: 999,
     letter: "AA",
     emoji: <FaCheckCircle style={{ color: '#43b324', verticalAlign: 'middle', fontSize: '1.1em', marginLeft: 2, marginRight: 2 }} />, // check verde
@@ -42,11 +42,11 @@ function getScoreLevel(score) {
   return SCORE_LEVELS.find(l => score >= l.min && score <= l.max) || SCORE_LEVELS[SCORE_LEVELS.length - 1];
 }
 
-const CreditReportPage = () => {
+const CreditReportPage = ({ onSiguiente }) => {
   const [selectedHistory, setSelectedHistory] = useState("");
   const [source, setSource] = useState("");
   const [confirmed, setConfirmed] = useState(false);
-  const [score, setScore] = useState(999);
+  const [score, setScore] = useState(900);
   const [isDragging, setIsDragging] = useState(false);
   const scoreBarRef = useRef(null);
   const [price, setPrice] = useState("0.00");
@@ -105,7 +105,8 @@ const CreditReportPage = () => {
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
       // Aquí iría el envío real del formulario
-      alert('Formulario enviado correctamente');
+      if (onSiguiente) onSiguiente();
+      // alert('Formulario enviado correctamente');
     }
   };
 
@@ -118,7 +119,8 @@ const CreditReportPage = () => {
             <h1 className="form-title">Reporte de Crédito</h1>
             <div className="subtitle-buro"><span className="buro-ecuador-red">Buró Ecuador</span></div>
             <div className="desc">
-              <b>Descubre lo que los bancos y cooperativas ven sobre ti.</b> En Buró Ecuador, te ayudamos con el análisis de tu salud crediticia en el sistema financiero ecuatoriano.
+              <b className="desc-nunito-bold">Descubre lo que los bancos y cooperativas ven sobre ti.</b>
+              <span className="desc-nunito-regular"> En Buró Ecuador, te ayudamos con el análisis de tu salud crediticia en el sistema financiero ecuatoriano.</span>
               <span className="desc-num">(1)</span>
             </div>
             <div className="form-alert-red">
@@ -133,6 +135,10 @@ const CreditReportPage = () => {
             </div>
           </div>
           <form className="main-form" onSubmit={handleSubmit}>
+            <div className="info-title">Información</div>
+            <div className="desc" style={{ marginTop: 16, marginBottom: 0 }}>
+              Nuestra responsabilidad es evitar que terceros accedan a tu información sin tu autorización. Para validar esto, <b>al final del formulario te solicitaremos lo siguiente:</b>
+            </div>
             <div className="form-group">
               <label htmlFor="historial" className="form-label">Historial Financiero <span className="form-required">*</span></label>
               <select
@@ -146,7 +152,7 @@ const CreditReportPage = () => {
                 <option value="repote360">Reporte 360 PDF Buró Ecuador</option>
                 <option value="analisis-personalizado">Análisis Personalizado 360 + PDF</option>
               </select>
-              {errors.historial && <div className="form-error">{errors.historial}</div>}
+              {errors.historial && <div className="form-error-v2">{errors.historial}</div>}
             </div>
             <div className="form-group">
               <label htmlFor="precio" className="form-label">Precio del producto</label>
@@ -172,10 +178,12 @@ const CreditReportPage = () => {
                 <label><input type="radio" name="conociste" value="Google" checked={source === 'Google'} onChange={e => setSource(e.target.value)} /> Google</label>
                 <label><input type="radio" name="conociste" value="Otro" checked={source === 'Otro'} onChange={e => setSource(e.target.value)} /> Otro</label>
               </div>
-              {errors.source && <div className="form-error">{errors.source}</div>}
+              {errors.source && <div className="form-error-v2">{errors.source}</div>}
             </div>
             <div className="form-group">
-              <label className="form-label">Confirmación del titular <span className="form-required">*</span></label>
+              <label className="form-label">
+                Confirmación <span className="form-required">*</span>
+              </label>
               <div className="checkbox-group">
                 <label className="checkbox-label">
                   <input type="checkbox" name="confirmacion" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} />
@@ -185,7 +193,7 @@ const CreditReportPage = () => {
                   </span>
                 </label>
               </div>
-              {errors.confirmed && <div className="form-error">{errors.confirmed}</div>}
+              {errors.confirmed && <div className="form-error-v2">{errors.confirmed}</div>}
             </div>
             <button type="submit" className="siguiente-btn">Siguiente</button>
           </form>

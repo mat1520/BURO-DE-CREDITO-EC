@@ -49,6 +49,20 @@
   padding: 4px 8px;
   box-shadow: 0 1px 4px #0001;
 }
+.footer-copyright-nunito {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: rgb(108, 117, 125);
+  line-height: 16px;
+}
+.footer-descargo-roboto {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  font-size: 10px;
+  color: rgb(122, 122, 122);
+  line-height: 15px;
+}
 @media (max-width: 900px) {
   .footer-content {
     flex-direction: column;

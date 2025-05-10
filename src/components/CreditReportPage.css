@@ -1243,4 +1243,44 @@
   .score-section-v2 {
     margin-bottom: 14px;
   }
+}
+
+.desc-nunito-bold {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: rgb(52, 58, 64);
+  line-height: 24px;
+}
+
+.desc-nunito-regular {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: rgb(52, 58, 64);
+  line-height: 24px;
+}
+
+.info-title {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  color: rgb(119, 119, 113);
+  line-height: 20px;
+  margin-bottom: 4px;
+}
+
+.form-error-v2 {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  color: rgb(224, 69, 98);
+  line-height: 24px;
+  background: #f8e6ea;
+  padding: 6px 12px;
+  border-radius: 2px;
+  margin-bottom: 6px;
+  margin-top: 2px;
+  width: 100%;
+  display: block;
 } 
