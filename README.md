@@ -110,13 +110,12 @@ This project is deployed on Vercel. The deployment process is automated through 
 ## 👨‍💻 Author
 
 - **Ariel Melo** - [@mat1520](https://github.com/mat1520)
-  - Full Stack Developer
-  - React Specialist
-  - UI/UX Enthusiast
 
 ## 📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+Copyright (c) 2025 Ariel Melo
 
 ## 🤝 Contributing
 
